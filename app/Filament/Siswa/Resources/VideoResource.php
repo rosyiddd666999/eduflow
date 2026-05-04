@@ -36,6 +36,15 @@ class VideoResource extends Resource
                 Tables\Columns\TextColumn::make('teacher.name')
                     ->label('Guru')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipe')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'youtube' => 'danger',
+                        'vimeo' => 'info',
+                        'upload' => 'success',
+                        default => 'primary',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -73,6 +82,7 @@ class VideoResource extends Resource
                             ->label('Link Sumber')
                             ->url(fn ($record) => $record->url)
                             ->color('primary')
+                            ->visible(fn ($record) => $record->type !== 'upload')
                             ->columnSpanFull(),
                     ])->columns(2)
             ]);

@@ -9,9 +9,16 @@ class StudentStats extends BaseWidget
 {
     protected function getStats(): array
     {
-        $attempts = \App\Models\QuizAttempt::where('user_id', auth()->id())->get();
+        $attempts = \App\Models\QuizAttempt::where('student_id', auth()->id())->get();
         $avgScore = $attempts->avg('score') ?? 0;
         $totalQuizzes = $attempts->count();
+        $myTotalScore = \App\Models\QuizAttempt::where('student_id', auth()->id())
+            ->sum('score');
+
+        $rank = \App\Models\QuizAttempt::selectRaw('student_id, SUM(score) as total_score')
+            ->groupBy('student_id')
+            ->havingRaw('SUM(score) > ?', [$myTotalScore])
+            ->count() + 1;
 
         return [
             Stat::make('Rata-rata Skor', round($avgScore))
@@ -22,7 +29,7 @@ class StudentStats extends BaseWidget
                 ->description('Total kuis yang telah dikerjakan')
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('success'),
-            Stat::make('Peringkat', '-')
+            Stat::make('Peringkat', $rank)
                 ->description('Peringkat Anda di sekolah')
                 ->descriptionIcon('heroicon-m-trophy')
                 ->color('warning'),

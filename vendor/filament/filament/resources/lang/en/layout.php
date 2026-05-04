@@ -11,25 +11,25 @@ return [
         ],
 
         'logout' => [
-            'label' => 'Sign out',
+            'label' => 'Keluar',
         ],
 
         'open_database_notifications' => [
-            'label' => 'Open notifications',
+            'label' => 'Buka notifikasi',
         ],
 
         'open_user_menu' => [
-            'label' => 'User menu',
+            'label' => 'Menu pengguna',
         ],
 
         'sidebar' => [
 
             'collapse' => [
-                'label' => 'Collapse sidebar',
+                'label' => 'Turunkan Sidebar',
             ],
 
             'expand' => [
-                'label' => 'Expand sidebar',
+                'label' => 'Naikan Sidebar',
             ],
 
         ],
@@ -37,15 +37,15 @@ return [
         'theme_switcher' => [
 
             'dark' => [
-                'label' => 'Enable dark theme',
+                'label' => 'Tema Gelap',
             ],
 
             'light' => [
-                'label' => 'Enable light theme',
+                'label' => 'Tema Terang',
             ],
 
             'system' => [
-                'label' => 'Enable system theme',
+                'label' => 'Tema Sistem',
             ],
 
         ],
