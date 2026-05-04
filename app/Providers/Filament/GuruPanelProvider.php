@@ -27,7 +27,7 @@ class GuruPanelProvider extends PanelProvider
             ->path('guru')
             ->login()
             ->colors([
-                'primary' => Color::Teal,
+                'primary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Guru/Resources'), for: 'App\\Filament\\Guru\\Resources')
             ->discoverPages(in: app_path('Filament/Guru/Pages'), for: 'App\\Filament\\Guru\\Pages')
@@ -37,7 +37,7 @@ class GuruPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Guru/Widgets'), for: 'App\\Filament\\Guru\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

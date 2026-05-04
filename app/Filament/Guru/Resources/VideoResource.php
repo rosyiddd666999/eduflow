@@ -29,15 +29,41 @@ class VideoResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
+                    ->label('Judul Video')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->label('Tipe Video')
+                    ->options([
+                        'youtube' => 'YouTube',
+                        'vimeo' => 'Vimeo',
+                        'upload' => 'Upload File (.mp4)',
+                    ])
+                    ->required()
+                    ->live()
+                    ->default('youtube'),
+                Forms\Components\TextInput::make('url')
+                    ->label('Link Video')
+                    ->url()
+                    ->maxLength(255)
+                    ->required(fn (Forms\Get $get) => in_array($get('type'), ['youtube', 'vimeo']))
+                    ->visible(fn (Forms\Get $get) => in_array($get('type'), ['youtube', 'vimeo'])),
+                Forms\Components\FileUpload::make('file_path')
+                    ->label('File Video (.mp4)')
+                    ->disk('public')
+                    ->directory('videos')
+                    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'])
+                    ->maxSize(102400) // 100MB max
+                    ->helperText('Max 100MB. Jalankan server dengan: php -d upload_max_filesize=100M -d post_max_size=100M artisan serve')
+                    ->required(fn (Forms\Get $get) => $get('type') === 'upload')
+                    ->visible(fn (Forms\Get $get) => $get('type') === 'upload')
+                    ->saveUploadedFileUsing(function ($file) {
+                        return app(\App\Services\CpanelUploadService::class)->upload($file);
+                    }),
                 Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('url')
-                    ->required()
-                    ->url()
-                    ->maxLength(255),
                 Forms\Components\Hidden::make('teacher_id')
                     ->default(auth()->id()),
             ]);
@@ -48,10 +74,19 @@ class VideoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Judul')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('url')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipe')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'youtube' => 'danger',
+                        'vimeo' => 'info',
+                        'upload' => 'success',
+                        default => 'primary',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -90,6 +125,7 @@ class VideoResource extends Resource
                             ->label('Link Sumber')
                             ->url(fn ($record) => $record->url)
                             ->color('primary')
+                            ->visible(fn ($record) => $record->type !== 'upload')
                             ->columnSpanFull(),
                     ])->columns(2)
             ]);

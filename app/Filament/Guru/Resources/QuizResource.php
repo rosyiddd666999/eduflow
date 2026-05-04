@@ -28,18 +28,58 @@ class QuizResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('duration')
-                    ->required()
-                    ->numeric()
-                    ->suffix('minutes'),
-                Forms\Components\Hidden::make('teacher_id')
-                    ->default(auth()->id()),
+                Forms\Components\Wizard::make([
+                    Forms\Components\Wizard\Step::make('Detail Kuis')
+                        ->schema([
+                            Forms\Components\TextInput::make('title')
+                                ->label('Judul Kuis')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('subject')
+                                ->label('Mata Pelajaran')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Textarea::make('description')
+                                ->label('Deskripsi')
+                                ->maxLength(65535)
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('duration_minutes')
+                                ->label('Durasi (Menit)')
+                                ->required()
+                                ->numeric()
+                                ->suffix('menit'),
+                            Forms\Components\Hidden::make('teacher_id')
+                                ->default(auth()->id()),
+                        ]),
+                    Forms\Components\Wizard\Step::make('Soal')
+                        ->schema([
+                            Forms\Components\Repeater::make('questions')
+                                ->relationship()
+                                ->schema([
+                                    Forms\Components\Textarea::make('question_text')
+                                        ->required()
+                                        ->columnSpanFull(),
+                                    Forms\Components\TextInput::make('option_a')->required(),
+                                    Forms\Components\TextInput::make('option_b')->required(),
+                                    Forms\Components\TextInput::make('option_c')->required(),
+                                    Forms\Components\TextInput::make('option_d')->required(),
+                                    Forms\Components\Select::make('correct_answer')
+                                        ->options([
+                                            'A' => 'A',
+                                            'B' => 'B',
+                                            'C' => 'C',
+                                            'D' => 'D',
+                                        ])
+                                        ->required(),
+                                ])
+                                ->columns(2)
+                        ]),
+                    Forms\Components\Wizard\Step::make('Tinjau')
+                        ->schema([
+                            Forms\Components\Placeholder::make('review')
+                                ->content('Pastikan semua detail kuis dan soal sudah benar sebelum menyimpan.')
+                        ]),
+                ])->columnSpanFull()
             ]);
     }
 
@@ -48,11 +88,17 @@ class QuizResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Judul Kuis')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('duration')
+                Tables\Columns\TextColumn::make('subject')
+                    ->label('Mata Pelajaran')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('duration_minutes')
+                    ->label('Durasi (Menit)')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

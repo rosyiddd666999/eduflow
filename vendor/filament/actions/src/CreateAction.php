@@ -15,7 +15,7 @@ class CreateAction extends Action
 {
     use CanCustomizeProcess;
 
-    protected bool | Closure $canCreateAnother = true;
+    protected bool|Closure $canCreateAnother = true;
 
     protected ?Closure $getRelationshipUsing = null;
 
@@ -28,9 +28,9 @@ class CreateAction extends Action
     {
         parent::setUp();
 
-        $this->label(fn (): string => __('filament-actions::create.single.label', ['label' => $this->getModelLabel()]));
+        $this->label(fn(): string => __('filament-actions::create.single.label', ['label' => $this->getModelLabel()]));
 
-        $this->modalHeading(fn (): string => __('filament-actions::create.single.modal.heading', ['label' => $this->getModelLabel()]));
+        $this->modalHeading(fn(): string => __('filament-actions::create.single.modal.heading', ['label' => $this->getModelLabel()]));
 
         $this->modalSubmitActionLabel(__('filament-actions::create.single.modal.actions.create.label'));
 
@@ -100,7 +100,7 @@ class CreateAction extends Action
         return $this;
     }
 
-    public function createAnother(bool | Closure $condition = true): static
+    public function createAnother(bool|Closure $condition = true): static
     {
         $this->canCreateAnother = $condition;
 
@@ -110,9 +110,9 @@ class CreateAction extends Action
     /**
      * @deprecated Use `createAnother()` instead.
      */
-    public function disableCreateAnother(bool | Closure $condition = true): static
+    public function disableCreateAnother(bool|Closure $condition = true): static
     {
-        $this->createAnother(fn (CreateAction $action): bool => ! $action->evaluate($condition));
+        $this->createAnother(fn(CreateAction $action): bool => !$action->evaluate($condition));
 
         return $this;
     }
@@ -127,7 +127,7 @@ class CreateAction extends Action
         return true;
     }
 
-    public function getRelationship(): Relation | Builder | null
+    public function getRelationship(): Relation|Builder|null
     {
         return $this->evaluate($this->getRelationshipUsing);
     }
